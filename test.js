@@ -155,8 +155,93 @@ describe("game of life test case", ()=>{
 
 
     //update state of cell
+    describe("update the state of cell", ()=>{
+        describe("getting state of cell", ()=>{
+            const cell = new Cell(true)
+            expect(cell.getState()).toBe(true)
+        })
 
+        describe("getting state of cell", ()=>{
+            const cell = new Cell(false)
+            expect(cell.getState()).toBe(false)
+        })
+
+        describe("check if cell status need to update", ()=>{
+            const world = new World(3 ,3)
+            world.createStatesOfCells()
+            expect(world.nextCellStatus(0, 0)).toBe(false)
+        })
+
+        describe("check if cell status need to update", ()=>{
+            const world = new World(3 ,3)
+            world.createStatesOfCells()
+            world.insertCell(0, 0, new Cell(true))
+            world.insertCell(1, 0, new Cell(true))
+            expect(world.nextCellStatus(1, 1)).toBe(false)
+        })
+
+        describe("check if cell status need to update", ()=>{
+            const world = new World(3 ,3)
+            world.createStatesOfCells()
+            world.insertCell(0, 0, new Cell(true))
+            world.insertCell(1, 0, new Cell(true))
+            world.insertCell(2, 0, new Cell(true))
+            expect(world.nextCellStatus(1, 1)).toBe(true)
+        })
+
+        describe("check if cell status need to update", ()=>{
+            const world = new World(3 ,3)
+            world.createStatesOfCells()
+            world.insertCell(0, 0, new Cell(true))
+            world.insertCell(1, 0, new Cell(true))
+            world.insertCell(2, 0, new Cell(true))
+            world.insertCell(2, 2, new Cell(true))
+            world.insertCell(1, 1, new Cell(true))
+            expect(world.nextCellStatus(1, 1)).toBe(false)
+            world.insertCell(1, 1, new Cell(false))
+            expect(world.nextCellStatus(1, 1)).toBe(false)
+
+        })
+
+
+        describe("update cell status 1", ()=>{
+            const world = new World(3 ,3)
+            world.createStatesOfCells()
+            let nextStatus = world.nextCellStatus(1, 1)
+            expect(world.updateStatesOfCells(1, 1, nextStatus)).toBe(true)
+        })
+
+        describe("update cell status 2", ()=>{
+            const world = new World(3 ,3)
+            world.createStatesOfCells()
+            world.insertCell(0, 0, new Cell(true))
+            world.insertCell(1, 0, new Cell(true))
+            world.insertCell(2, 0, new Cell(true))
+            world.insertCell(2, 2, new Cell(true))
+            world.insertCell(1, 1, new Cell(true))
+
+            let nextStatus = world.nextCellStatus(1, 1)
+            expect(world.updateStatesOfCells(-1, -1, nextStatus)).toBe(false)
+            expect(world.getStatesOfCells(-1, -1)).toBe(false)
+
+        })
+
+        describe("update cell status 2", ()=>{
+            const world = new World(3 ,3)
+            world.createStatesOfCells()
+            world.insertCell(0, 0, new Cell(true))
+            world.insertCell(1, 0, new Cell(true))
+            world.insertCell(1, 1, new Cell(true))
+
+            let nextStatus = world.nextCellStatus(1, 1)
+            expect(world.updateStatesOfCells(0, 0, nextStatus)).toBe(true)
+            expect(world.getStatesOfCells(0, 0)).toBe(true)
+
+        })
+    })
     // insert randomize data
+
+    //simulate
 
 
 

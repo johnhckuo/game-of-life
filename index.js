@@ -1,14 +1,7 @@
 class World{
     constructor(width, height){
-        if (width < 0) {
-            width = 0
-        }
-
-        if (height < 0){
-            height = 0
-        }
-        this.height = height
-        this.width = width  
+        width < 0 ? this.width = 0 : this.width = width
+        height < 0 ? this.height = 0 : this.height = height
         this.statesOfCells = [] 
     }
 
@@ -22,6 +15,17 @@ class World{
         return true
     }
 
+    updateStatesOfCells(columnOffsets, rowOffsets, status){
+        if (this.checkOutOfBoundary(columnOffsets, rowOffsets)) return false
+        this.statesOfCells[rowOffsets][columnOffsets].alive = status
+        return true
+    }
+
+    getStatesOfCells(columnOffset, rowOffsets){
+        if (this.checkOutOfBoundary(columnOffset, rowOffsets)) return false
+        return this.statesOfCells[rowOffsets][columnOffset].alive
+    }
+
     getWidth(){
         return this.statesOfCells[0].length
     }
@@ -29,23 +33,23 @@ class World{
         return this.statesOfCells.length
     }
 
-    insertCell(x, y, cell){
+    insertCell(columnOffsets, rowOffsets, cell){
         if (
-            (x > this.width-1) || 
-            (y > this.height-1) ||
-            (x < 0 ) ||
-            (y < 0)){
+            (columnOffsets > this.width-1) || 
+            (rowOffsets > this.height-1) ||
+            (columnOffsets < 0 ) ||
+            (rowOffsets < 0)){
                 return false
             } 
-        this.statesOfCells[y][x] = cell
+        this.statesOfCells[rowOffsets][columnOffsets] = cell
         return true
     }
 
-    getAliveNeighborNumber(x, y){
+    getAliveNeighborNumber(columnOffsets, rowOffsets){
         let counter = 0
-        for (var i = x-1 ; i <= x+1 ; i++){
-            for (var j = y-1 ; j <= y+1 ; j++){
-                if ((i == x) && (j == y)) continue
+        for (var i = columnOffsets-1 ; i <= columnOffsets+1 ; i++){
+            for (var j = rowOffsets-1 ; j <= rowOffsets+1 ; j++){
+                if ((i == columnOffsets) && (j == rowOffsets)) continue
                 else if (this.checkAlive(i, j)) counter = counter+1       
             }
         }
@@ -58,11 +62,25 @@ class World{
         else return false
     }
 
-    checkOutOfBoundary(x, y){
-        if ((x <0 ) || (x >= this.width)) return true
-        else if ((y <0 ) || (y >= this.height)) return true
+    checkOutOfBoundary(columnOffsets, rowOffsets){
+        if ((columnOffsets <0 ) || (columnOffsets >= this.width)) return true
+        else if ((rowOffsets <0 ) || (rowOffsets >= this.height)) return true
         return false
     }
+
+    nextCellStatus(columnOffsets, rowOffsets){
+        if (this.getAliveNeighborNumber(columnOffsets, rowOffsets) < 2 && (this.statesOfCells[rowOffsets][columnOffsets].alive)){
+            return false
+        }else if (((this.getAliveNeighborNumber(columnOffsets, rowOffsets) == 2) || (this.getAliveNeighborNumber(columnOffsets, rowOffsets) == 3)) && (this.statesOfCells[rowOffsets][columnOffsets].alive)){
+            return true //do nothing
+        }else if (this.getAliveNeighborNumber(columnOffsets, rowOffsets) > 3 && (this.statesOfCells[rowOffsets][columnOffsets].alive)){
+            return false
+        }else if (this.getAliveNeighborNumber(columnOffsets, rowOffsets) == 3 && (!this.statesOfCells[rowOffsets][columnOffsets].alive)){
+            return true
+        }
+        return false
+    }
+    
 }
 
 class Cell{
@@ -71,6 +89,10 @@ class Cell{
             alive = true
         }
         this.alive = alive
+    }
+
+    getState(){
+        return this.alive
     }
 
 
