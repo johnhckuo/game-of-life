@@ -3,6 +3,15 @@ class World{
         width < 0 ? this.width = 0 : this.width = width
         height < 0 ? this.height = 0 : this.height = height
         this.statesOfCells = [] 
+        this.columnOffset = -1
+        this.rowOffset = -1
+    }
+
+    setCurrentCoord(columnOffset, rowOffset){
+        if (this.isOutOfBoundary(columnOffset, rowOffset)) return false
+        this.columnOffset = columnOffset
+        this.rowOffset = rowOffset
+        return true
     }
 
     createStatesOfCells(){
@@ -15,15 +24,26 @@ class World{
         return true
     }
 
-    updateStatesOfCells(columnOffsets, rowOffsets, status){
-        if (this.checkOutOfBoundary(columnOffsets, rowOffsets)) return false
-        this.statesOfCells[rowOffsets][columnOffsets].alive = status
+    createRandomStatesOfCells(){
+        for (let i = 0 ; i < this.height ; i++){
+            this.statesOfCells.push(new Array(this.width))
+            for (let j = 0 ; j< this.width ; j++){
+                let cell = new Cell(false)
+                cell.randomizeState()
+                this.statesOfCells[i][j] = cell.getState()
+            }
+        }
         return true
     }
 
-    getStatesOfCells(columnOffset, rowOffsets){
-        if (this.checkOutOfBoundary(columnOffset, rowOffsets)) return false
-        return this.statesOfCells[rowOffsets][columnOffset].alive
+    updateStatesOfCells(){
+        let status = this.nextCellStatus()
+        this.statesOfCells[this.rowOffset][this.columnOffset].alive = status
+        return true
+    }
+
+    getStatesOfCells(){
+        return this.statesOfCells[this.rowOffset][this.columnOffset].alive
     }
 
     getWidth(){
@@ -33,49 +53,61 @@ class World{
         return this.statesOfCells.length
     }
 
-    insertCell(columnOffsets, rowOffsets, cell){
-        if (
-            (columnOffsets > this.width-1) || 
-            (rowOffsets > this.height-1) ||
-            (columnOffsets < 0 ) ||
-            (rowOffsets < 0)){
-                return false
-            } 
-        this.statesOfCells[rowOffsets][columnOffsets] = cell
+    setCurrentCoord(columnOffset, rowOffset){
+        if (this.isOutOfBoundary(columnOffset, rowOffset)){
+            console.error("coordinate out of boundary")
+            throw {
+                name: "Error",
+                message: "coordinate out of boundary"
+            }
+        }
+        this.columnOffset = columnOffset
+        this.rowOffset = rowOffset
         return true
     }
 
-    getAliveNeighborNumber(columnOffsets, rowOffsets){
+    isOutOfBoundary(columnOffset, rowOffset){
+        if ((columnOffset > this.width-1) 
+            || (rowOffset > this.height-1) 
+            || (columnOffset < 0 ) 
+            || (rowOffset < 0)){
+                return true
+            } 
+        return false
+    }
+
+    insertCell(columnOffset, rowOffset, cell){
+        if (this.isOutOfBoundary(columnOffset, rowOffset)) return false
+        this.statesOfCells[rowOffset][columnOffset] = cell
+        return true
+    }
+
+    getAliveNeighborNumber(){
         let counter = 0
-        for (var i = columnOffsets-1 ; i <= columnOffsets+1 ; i++){
-            for (var j = rowOffsets-1 ; j <= rowOffsets+1 ; j++){
-                if ((i == columnOffsets) && (j == rowOffsets)) continue
+        for (var i = this.columnOffset-1 ; i <= this.columnOffset+1 ; i++){
+            for (var j = this.rowOffset-1 ; j <= this.rowOffset+1 ; j++){
+                if ((i == this.columnOffset) && (j == this.rowOffset)) continue
                 else if (this.checkAlive(i, j)) counter = counter+1       
             }
         }
         return counter
     }
 
-    checkAlive(i ,j){
-        if (this.checkOutOfBoundary(i,j)) return false
-        else if (this.statesOfCells[j][i].alive) return true
+    checkAlive(columnOffset, rowOffset){
+        if (this.isOutOfBoundary(columnOffset, rowOffset)) return false
+        if (this.statesOfCells[rowOffset][columnOffset].alive) return true
         else return false
     }
 
-    checkOutOfBoundary(columnOffsets, rowOffsets){
-        if ((columnOffsets <0 ) || (columnOffsets >= this.width)) return true
-        else if ((rowOffsets <0 ) || (rowOffsets >= this.height)) return true
-        return false
-    }
-
-    nextCellStatus(columnOffsets, rowOffsets){
-        if (this.getAliveNeighborNumber(columnOffsets, rowOffsets) < 2 && (this.statesOfCells[rowOffsets][columnOffsets].alive)){
+    nextCellStatus(){
+        let aliveNeighbor = this.getAliveNeighborNumber()
+        if (aliveNeighbor < 2 && (this.statesOfCells[this.rowOffset][this.columnOffset].alive)){
             return false
-        }else if (((this.getAliveNeighborNumber(columnOffsets, rowOffsets) == 2) || (this.getAliveNeighborNumber(columnOffsets, rowOffsets) == 3)) && (this.statesOfCells[rowOffsets][columnOffsets].alive)){
+        }else if ((aliveNeighbor == 2 || aliveNeighbor == 3) && (this.statesOfCells[this.rowOffset][this.columnOffset].alive)){
             return true 
-        }else if (this.getAliveNeighborNumber(columnOffsets, rowOffsets) > 3 && (this.statesOfCells[rowOffsets][columnOffsets].alive)){
+        }else if (aliveNeighbor > 3 && (this.statesOfCells[this.rowOffset][this.columnOffset].alive)){
             return false
-        }else if (this.getAliveNeighborNumber(columnOffsets, rowOffsets) == 3 && (!this.statesOfCells[rowOffsets][columnOffsets].alive)){
+        }else if (aliveNeighbor == 3 && (!this.statesOfCells[this.rowOffset][this.columnOffset].alive)){
             return true
         }
         return false
@@ -93,6 +125,11 @@ class Cell{
 
     getState(){
         return this.alive
+    }
+
+    randomizeState(){
+        const newState = Math.random() >= 0.5
+        this.alive = newState
     }
 
 
