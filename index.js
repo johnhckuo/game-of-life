@@ -72,7 +72,7 @@ class World{
         if (this.getAliveNeighborNumber(columnOffsets, rowOffsets) < 2 && (this.statesOfCells[rowOffsets][columnOffsets].alive)){
             return false
         }else if (((this.getAliveNeighborNumber(columnOffsets, rowOffsets) == 2) || (this.getAliveNeighborNumber(columnOffsets, rowOffsets) == 3)) && (this.statesOfCells[rowOffsets][columnOffsets].alive)){
-            return true //do nothing
+            return true 
         }else if (this.getAliveNeighborNumber(columnOffsets, rowOffsets) > 3 && (this.statesOfCells[rowOffsets][columnOffsets].alive)){
             return false
         }else if (this.getAliveNeighborNumber(columnOffsets, rowOffsets) == 3 && (!this.statesOfCells[rowOffsets][columnOffsets].alive)){
