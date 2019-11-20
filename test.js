@@ -244,7 +244,7 @@ describe("game of life test case", ()=>{
             world.createRandomStatesOfCells()
             for (let i = 0 ; i < 3 ; i++){
                 for (let j = 0 ; j < 3 ; j++){
-                    expect(world.statesOfCells[i][j] == true || world.statesOfCells[i][j] == false).toBeTruthy()
+                    expect(world.statesOfCells[i][j].alive == true || world.statesOfCells[i][j].alive == false).toBeTruthy()
                 }
             }
         })
@@ -261,6 +261,19 @@ describe("game of life test case", ()=>{
             world.setCurrentCoord(1, 1)
             expect(world.updateStatesOfCells()).toBe(true)
             world.insertCell(2, 1, new Cell(true))
+        })
+
+        describe("init world", ()=>{
+            let world = new World(3 ,3)
+            world.createRandomStatesOfCells()
+            for (let i = 0 ; i < 3 ; i++){
+                for (let j = 0 ; j < 3 ; j++){
+                    expect(world.statesOfCells[i][j].alive == true || world.statesOfCells[i][j].alive == false).toBeTruthy()
+                    world.setCurrentCoord(i,j)
+                    expect(world.updateStatesOfCells()).toBe(true)
+                    expect(world.statesOfCells[i][j].alive == true || world.statesOfCells[i][j].alive == false).toBeTruthy()
+                }
+            }
         })
     })
 

@@ -30,7 +30,7 @@ class World{
             for (let j = 0 ; j< this.width ; j++){
                 let cell = new Cell(false)
                 cell.randomizeState()
-                this.statesOfCells[i][j] = cell.getState()
+                this.statesOfCells[i][j] = cell
             }
         }
         return true
